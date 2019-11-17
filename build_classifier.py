@@ -1,8 +1,10 @@
-import tensorflow as tf
-import numpy as np
+import glob
 import json
+import math
+import sys
 from pathlib import Path
 
+import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
@@ -13,13 +15,6 @@ from tensorflow.keras.layers import (Activation, BatchNormalization, Conv2D,
 from tensorflow.keras.models import Model, Sequential
 from tensorflow.keras.optimizers import Adam
 from tqdm import tqdm
-import glob
-import cv2
-import matplotlib.pyplot as plt
-from tqdm import tqdm
-import math
-
-import sys
 
 
 def main():
