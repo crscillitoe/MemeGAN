@@ -1,12 +1,16 @@
-import tensorflow as tf
-import numpy as np
 import json
-from tensorflow.keras.layers import Input, Dense, Reshape, Flatten, Dropout
-from tensorflow.keras.layers import BatchNormalization, Activation, ZeroPadding2D
-from tensorflow.keras.layers import LeakyReLU
-from tensorflow.keras.layers import UpSampling2D, Conv2D
-from tensorflow.keras.models import Sequential, Model
+from pathlib import Path
+
+import matplotlib.pyplot as plt
+import numpy as np
+import tensorflow as tf
+from tensorflow.keras.datasets import mnist
+from tensorflow.keras.layers import (Activation, BatchNormalization, Conv2D,
+                                     Dense, Dropout, Flatten, Input, LeakyReLU,
+                                     Reshape, UpSampling2D, ZeroPadding2D)
+from tensorflow.keras.models import Model, Sequential
 from tensorflow.keras.optimizers import Adam
+from tqdm import tqdm
 
 
 def main():
@@ -25,9 +29,9 @@ def main():
 
 class GAN:
     def __init__(self):
-        self.img_rows = 640
-        self.img_cols = 480
-        self.channels = 3
+        self.img_rows = 28
+        self.img_cols = 28
+        self.channels = 1
         self.img_shape = (self.img_rows, self.img_cols, self.channels)
         self.latent_dim = 100
 
@@ -108,7 +112,7 @@ class GAN:
         valid = np.ones((batch_size, 1))
         fake = np.zeros((batch_size, 1))
 
-        for epoch in range(epochs):
+        for epoch in tqdm(range(epochs)):
 
             # ---------------------
             #  Train Discriminator
@@ -162,7 +166,9 @@ class GAN:
                 axs[i, j].imshow(gen_imgs[cnt, :, :, 0], cmap="gray")
                 axs[i, j].axis("off")
                 cnt += 1
-        fig.savefig("images/%d.png" % epoch)
+        p = Path("./images")
+        p.mkdir(parents=True, exist_ok=True)
+        fig.savefig("./images/%d.png" % epoch)
         plt.close()
 
 
