@@ -1,3 +1,5 @@
+import tensorflow as tf
+import numpy as np
 import json
 from pathlib import Path
 
@@ -11,6 +13,13 @@ from tensorflow.keras.layers import (Activation, BatchNormalization, Conv2D,
 from tensorflow.keras.models import Model, Sequential
 from tensorflow.keras.optimizers import Adam
 from tqdm import tqdm
+import glob
+import cv2
+import matplotlib.pyplot as plt
+from tqdm import tqdm
+import math
+
+import sys
 
 
 def main():
@@ -32,6 +41,9 @@ class GAN:
         self.img_rows = 28
         self.img_cols = 28
         self.channels = 1
+        # self.img_rows = 64
+        # self.img_cols = 48
+        # self.channels = 3
         self.img_shape = (self.img_rows, self.img_cols, self.channels)
         self.latent_dim = 100
 
@@ -102,15 +114,20 @@ class GAN:
     def train(self, epochs, batch_size=128, sample_interval=50):
 
         # Load the dataset
-        (X_train, _), (_, _) = mnist.load_data()
+        X_train = load_memes((self.img_cols, self.img_rows))
 
+        print("Finished loading spicey memes")
         # Rescale -1 to 1
-        X_train = X_train / 127.5 - 1.0
-        X_train = np.expand_dims(X_train, axis=3)
+        X_train = X_train / (self.img_cols * self.img_rows)
+        print("Finished updating the values of X_Train")
+        # X_train = np.expand_dims(X_train, axis=3)
 
         # Adversarial ground truths
         valid = np.ones((batch_size, 1))
+        print("Finished creating valid data")
+
         fake = np.zeros((batch_size, 1))
+        print("Finished creating fake data")
 
         for epoch in tqdm(range(epochs)):
 
@@ -170,6 +187,18 @@ class GAN:
         p.mkdir(parents=True, exist_ok=True)
         fig.savefig("./images/%d.png" % epoch)
         plt.close()
+
+
+def load_memes(size):
+    files = glob.glob("Data/memes/*")
+    to_return = []
+    for file in range(math.floor(len(files) / 4)):
+        print(f"Loading file {files[file]}...")
+        img = cv2.imread(files[file], cv2.IMREAD_COLOR)
+        resized = cv2.resize(img, size, interpolation=cv2.INTER_AREA)
+        to_return.append(resized)
+
+    return np.asarray(to_return)
 
 
 if __name__ == "__main__":
